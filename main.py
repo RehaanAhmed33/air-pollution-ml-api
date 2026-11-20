@@ -4,7 +4,7 @@ from pathlib import Path
 import joblib
 import numpy as np
 import pandas as pd
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Body
 from pydantic import BaseModel
 
 # Load our previously trained XGBoost model.
@@ -110,7 +110,17 @@ def example():
 
 
 @app.post("/predict")
-def predict(request: PredictionRequest):
+def predict(
+    request: PredictionRequest = Body(
+        openapi_examples={
+            "xgboost_sample": {
+                "summary": "Our 32 XGBoost Input Features",
+                "description": "Example pollution and weather readings for testing.",
+                "value": example()
+            }
+        }
+    )
+):
     missing = [
         name for name in features
         if name not in request.features
